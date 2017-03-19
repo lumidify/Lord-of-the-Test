@@ -1,0 +1,2 @@
+share_grave_time = 1200 (time before grave is opened to public)
+grave_type = grave (which type of "bones" is enabled) [grave/drop/keep]

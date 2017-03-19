@@ -1,0 +1,3 @@
+lottcore
+default
+dye
