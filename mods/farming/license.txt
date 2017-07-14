@@ -14,7 +14,7 @@ Created by PilzAdam (License: WTFPL):
   farming_soil.png
   farming_soil_wet.png
   farming_soil_wet_side.png
-  farming_string.png
+  farming_cotton.png
 
 Created by Calinou (License: CC BY-SA 3.0):
   farming_tool_bronzehoe.png
@@ -43,3 +43,6 @@ Created by VanessaE (License: WTFPL):
   farming_cotton_6.png
   farming_cotton_7.png
   farming_cotton_8.png
+
+Created by cx384 (License: CC-BY-SA-4.0):
+  farming_yarn.png

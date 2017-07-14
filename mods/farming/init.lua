@@ -376,7 +376,7 @@ minetest.register_abm({
 --
 -- Cotton
 --
-minetest.register_craftitem("farming:seed_cotton", {
+minetest.register_craftitem("farming:cotton_seed", {
 	description = "Cotton Seed",
 	inventory_image = "farming_cotton_seed.png",
 	on_place = function(itemstack, placer, pointed_thing)
@@ -384,28 +384,25 @@ minetest.register_craftitem("farming:seed_cotton", {
 	end,
 })
 
-minetest.register_craftitem("farming:string", {
-	description = "String",
-	inventory_image = "farming_string.png",
+minetest.register_craftitem("farming:cotton", {
+	description = "Cotton",
+	inventory_image = "farming_cotton.png",
 })
 
-minetest.register_craft({
-	output = "wool:white",
-	recipe = {
-		{"farming:string", "farming:string"},
-		{"farming:string", "farming:string"},
-	}
+minetest.register_craftitem("farming:yarn", {
+	description = "Yarn",
+	inventory_image = "farming_yarn.png",
 })
 
 for i=1,8 do
 	local drop = {
 		items = {
-			{items = {'farming:string'},rarity=9-i},
-			{items = {'farming:string'},rarity=18-i*2},
-			{items = {'farming:string'},rarity=27-i*3},
-			{items = {'farming:seed_cotton'},rarity=9-i},
-			{items = {'farming:seed_cotton'},rarity=18-i*2},
-			{items = {'farming:seed_cotton'},rarity=27-i*3},
+			{items = {'farming:cotton'},rarity=9-i},
+			{items = {'farming:cotton'},rarity=18-i*2},
+			{items = {'farming:cotton'},rarity=27-i*3},
+			{items = {'farming:cotton_seed'},rarity=9-i},
+			{items = {'farming:cotton_seed'},rarity=18-i*2},
+			{items = {'farming:cotton_seed'},rarity=27-i*3},
 		}
 	}
 	minetest.register_node("farming:cotton_"..i, {

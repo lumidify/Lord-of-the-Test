@@ -1,3 +1,5 @@
+-- TODO: Abstract some of this since a lot of code is shared.
+
 farming.threshing_floor_formspec =
 "size[8,10]"..
 "label[3,0;Threshing Floor]"..
@@ -25,6 +27,36 @@ farming.mill_formspec =
 "listring[current_player;main]"..
 "listring[context;seeds]"..
 "listring[context;flour]"..
+"listring[current_player;main]"
+
+farming.spinning_wheel_formspec = 
+"size[8,10]"..
+"label[3,0;Spinning Wheel]"..
+"label[2.2,1;Punch to spin cotton into yarn]"..
+"label[2,2;Cotton]"..
+"label[5,2;Yarn]"..
+"list[context;cotton;1.5,3;2,2]"..
+"list[context;yarn;4.5,3;2,2]"..
+"list[current_player;main;0,6;8,4]"..
+"listring[context;cotton]"..
+"listring[current_player;main]"..
+"listring[context;cotton]"..
+"listring[context;yarn]"..
+"listring[current_player;main]"
+
+farming.loom_formspec = 
+"size[8,10]"..
+"label[3.5,0;Loom]"..
+"label[2,1;Punch to weave yarn into fabric]"..
+"label[2,2;Yarn]"..
+"label[5,2;Fabric]"..
+"list[context;yarn;1.5,3;2,2]"..
+"list[context;fabric;4.5,3;2,2]"..
+"list[current_player;main;0,6;8,4]"..
+"listring[context;yarn]"..
+"listring[current_player;main]"..
+"listring[context;yarn]"..
+"listring[context;fabric]"..
 "listring[current_player;main]"
 
 -- TODO: add different types of flour
@@ -127,6 +159,92 @@ minetest.register_node("lottfarming:threshing_floor", {
 		local meta = minetest.get_meta(pos)
 		local inv = meta:get_inventory()
 		if not inv:is_empty("straw") or not inv:is_empty("seeds") then
+			return false
+		end
+		return true
+	end,
+})
+
+minetest.register_node("lottfarming:spinning_wheel", {
+        description = "Spinning Wheel",
+        tiles = {"default_wood.png"},
+	groups = {choppy=2,oddly_breakable_by_hand=2},
+	is_ground_content = false,
+	on_construct = function(pos)
+		local meta = minetest.get_meta(pos)
+		local inv = meta:get_inventory()
+		meta:set_string("infotext", "Spinning Wheel")
+		inv:set_size("cotton", 4)
+		inv:set_size("yarn", 4)
+		meta:set_string("formspec", farming.spinning_wheel_formspec)
+	end,
+	on_punch = function(pos, node, puncher, pointed_thing)
+		local meta = minetest.get_meta(pos)
+		local inv = meta:get_inventory()
+		local src_stack = ItemStack("farming:cotton 4");
+		if not inv:contains_item("cotton", src_stack) then
+			minetest.chat_send_player(puncher:get_player_name(), "At least four units of cotton are needed to make yarn.")
+			return
+		end
+		local result_stack = ItemStack("farming:yarn")
+		if inv:room_for_item("yarn", result_stack) then
+			inv:add_item("yarn", result_stack)
+			inv:remove_item("cotton", src_stack)
+		end
+	end,
+	allow_metadata_inventory_put = function(pos, listname, index, stack, player)
+		if listname == "cotton" and stack:get_name() == "farming:cotton" then
+			return stack:get_count()
+		end
+		return 0
+	end,
+	can_dig = function(pos, player)
+		local meta = minetest.get_meta(pos)
+		local inv = meta:get_inventory()
+		if not inv:is_empty("cotton") or not inv:is_empty("yarn") then
+			return false
+		end
+		return true
+	end,
+})
+
+minetest.register_node("lottfarming:loom", {
+        description = "Loom",
+        tiles = {"default_wood.png"},
+	groups = {choppy=2,oddly_breakable_by_hand=2},
+	is_ground_content = false,
+	on_construct = function(pos)
+		local meta = minetest.get_meta(pos)
+		local inv = meta:get_inventory()
+		meta:set_string("infotext", "Loom")
+		inv:set_size("yarn", 4)
+		inv:set_size("fabric", 4)
+		meta:set_string("formspec", farming.loom_formspec)
+	end,
+	on_punch = function(pos, node, puncher, pointed_thing)
+		local meta = minetest.get_meta(pos)
+		local inv = meta:get_inventory()
+		local src_stack = ItemStack("farming:yarn 4");
+		if not inv:contains_item("yarn", src_stack) then
+			minetest.chat_send_player(puncher:get_player_name(), "At least four balls of yarn are needed to weave fabric.")
+			return
+		end
+		local result_stack = ItemStack("wool:white")
+		if inv:room_for_item("fabric", result_stack) then
+			inv:add_item("fabric", result_stack)
+			inv:remove_item("yarn", src_stack)
+		end
+	end,
+	allow_metadata_inventory_put = function(pos, listname, index, stack, player)
+		if listname == "yarn" and stack:get_name() == "farming:yarn" then
+			return stack:get_count()
+		end
+		return 0
+	end,
+	can_dig = function(pos, player)
+		local meta = minetest.get_meta(pos)
+		local inv = meta:get_inventory()
+		if not inv:is_empty("yarn") or not inv:is_empty("fabric") then
 			return false
 		end
 		return true

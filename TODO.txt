@@ -1,0 +1,4 @@
+lottfarming: Add different types of flour and bread (corn and barley).
+lottfarming: Abstract the code for machines like spinning wheel and loom since they are very similar.
+wool: Maybe rename to "fabric"? I renamed the descriptions, but due to the way cotton now
+      works (it needs to be woven into fabric), renaming the whole thing may be better.
