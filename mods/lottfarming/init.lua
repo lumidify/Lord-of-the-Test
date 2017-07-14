@@ -193,3 +193,6 @@ dofile(minetest.get_modpath("lottfarming").."/white.lua")
 
 -- ========= ORC FOOD =========
 dofile(minetest.get_modpath("lottfarming").."/orc_food.lua")
+
+-- ========= MACHINES  =========
+dofile(minetest.get_modpath("lottfarming").."/machines.lua")
