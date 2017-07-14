@@ -47,9 +47,6 @@ Amaz (CC BY-SA 3.0)
 	lottblocks_strategy_table_top.png
 	lottblocks_steel_lockpick.png
 	
-lumidify (CC BY-SA 3.0)
-	lottblocks_thrundir*.png
-	
 VanessaE (CC0)
 	lottblocks_palantir.obj
 	
