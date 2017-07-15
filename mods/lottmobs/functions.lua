@@ -167,79 +167,7 @@ local npc_attack = function(self)
         end
 end
 
-local guard_foods = {
-        ["lottfarming:corn"] = 5,
-        ["farming:bread"] = 10
-}
-
-lottmobs.save_guard_hunger = function()
-        minetest.mkdir(minetest.get_worldpath().."/"..SAVEDIR)
-	local file = io.open(minetest.get_worldpath().."/"..SAVEDIR.."/guard_hunger.txt", "w")
-	if file then
-		file:write(minetest.serialize(lottmobs.player_guards))
-		file:close()
-	end
-end
-
-lottmobs.do_guard_hunger = function(dtime)
-        for player, bool in pairs(lottmobs.connected_player_names) do
-                if lottmobs.player_guards[player] then
-                        for name, hunger_def in pairs(lottmobs.player_guards[player]) do
-                                lottmobs.guard_eat(hunger_def, player, name, dtime)
-                        end
-                end
-        end
-end
-
-lottmobs.guard_eat_active = function(self)
-        if lottmobs.player_guards[self.owner] then
-                local hunger_def = lottmobs.player_guards[self.owner][self.game_name]
-                if hunger_def then
-                        self.health = self.health + (hunger_def.health - hunger_def.last_active_health)
-                        hunger_def.last_active_health = self.health
-                        hunger_def.health = self.health
-                        self.object:set_hp(self.health)
-                        return
-                end
-        end
-        self.health = 0
-        self.object:set_hp(self.health)
-end
-
-lottmobs.guard_eat = function(self, owner, name, dtime)
-        if self.health <= 0 then
-                lottmobs.player_guards[owner][name] = nil
-                lottmobs.save_guard_hunger()
-        end
-        self.eat_timer = self.eat_timer + dtime
-        self.timer = self.timer + dtime
-        if self.eat_timer >= 60 then
-                self.food_level = self.food_level - 1
-                self.eat_timer = 0
-        end
-        if self.food_level <= 0 and self.timer >= 1 then
-                self.timer = 0
-                local food_inv = minetest.get_inventory({type="player", name=owner})
-                if food_inv then
-                        for food, eat_value in pairs(guard_foods) do
-                                local taken = food_inv:remove_item("bag4contents", ItemStack(food.." 1"))
-                                self.food_level = self.food_level + taken:get_count() * eat_value
-                                if self.food_level > 1 then
-                                        break
-                                end
-                        end
-                end
-                if self.food_level <= 0 then
-                        self.health = self.health - 1
-                end
-        end
-end
-
 lottmobs.guard_die = function(self, pos)
-	if self.owner and self.owner ~= "" then
-		lottmobs.player_guards[self.owner][self.game_name] = nil
-		lottmobs.save_guard_hunger()
-	end
 	if self.attack and self.attack:is_player() then
 		lottachievements.kill(self.name, self.attack)
 	end
@@ -288,7 +216,6 @@ lottmobs.do_custom_guard = function(self, dtime)
 		do_env_damage(self)
 	end
 	if self.owner and self.owner ~= "" then
-                lottmobs.guard_eat_active(self)
                 npc_guard_attack(self)
         else
                 npc_attack(self)
@@ -488,9 +415,6 @@ lottmobs.register_guard_craftitem = function(name, description, inventory_image)
                                             on_place = function(itemstack, placer, pointed_thing)
                                                     if pointed_thing.above then
                                                             local owner = placer:get_player_name()
-                                                            if not lottmobs.player_guards[owner] then
-                                                                    lottmobs.player_guards[owner] = {}
-                                                            end
                                                             local add_guard = function(game_name)
                                                                     local pos = pointed_thing.above
                                                                     pos.y = pos.y + 1
@@ -504,15 +428,11 @@ lottmobs.register_guard_craftitem = function(name, description, inventory_image)
                                                                     obj.tamed = true
                                                                     obj.owner = owner
                                                                     obj.order = "follow"
-                                                                    obj.eat_timer = 0
-                                                                    obj.food_level = 20
                                                                     return obj
                                                             end
                                                             lottmobs.name = function(name)
-                                                                    if name and name ~= "" and not lottmobs.player_guards[owner][name] then
-                                                                            local obj = add_guard(name)
-                                                                            lottmobs.player_guards[owner][name] = {food_level = 20, health = obj.health, eat_timer = 0, timer = 0, last_active_health = obj.health}
-                                                                            lottmobs.save_guard_hunger()
+                                                                    if name and name ~= "" then
+                                                                            add_guard(name)
                                                                     else
                                                                             minetest.show_formspec(owner, "mob_naming", "field[naming;Name your guard:;")
                                                                     end
