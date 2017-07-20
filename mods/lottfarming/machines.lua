@@ -12,7 +12,8 @@ farming.threshing_floor_formspec =
 "listring[context;straw]"..
 "listring[current_player;main]"..
 "listring[context;seeds]"..
-"listring[current_player;main]"
+"listring[current_player;main]"..
+"background[-0.5,-0.5;9,11;gui_chestbg.png]"
 
 farming.mill_formspec = 
 "size[8,10]"..
@@ -27,7 +28,8 @@ farming.mill_formspec =
 "listring[current_player;main]"..
 "listring[context;seeds]"..
 "listring[context;flour]"..
-"listring[current_player;main]"
+"listring[current_player;main]"..
+"background[-0.5,-0.5;9,11;gui_chestbg.png]"
 
 farming.spinning_wheel_formspec = 
 "size[8,10]"..
@@ -42,7 +44,8 @@ farming.spinning_wheel_formspec =
 "listring[current_player;main]"..
 "listring[context;cotton]"..
 "listring[context;yarn]"..
-"listring[current_player;main]"
+"listring[current_player;main]"..
+"background[-0.5,-0.5;9,11;gui_chestbg.png]"
 
 farming.loom_formspec = 
 "size[8,10]"..
@@ -57,7 +60,8 @@ farming.loom_formspec =
 "listring[current_player;main]"..
 "listring[context;yarn]"..
 "listring[context;fabric]"..
-"listring[current_player;main]"
+"listring[current_player;main]"..
+"background[-0.5,-0.5;9,11;gui_chestbg.png]"
 
 -- TODO: add different types of flour
 minetest.register_node("lottfarming:mill", {
