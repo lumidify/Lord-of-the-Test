@@ -85,25 +85,7 @@ local register_crafting_table = function(adj, noun, nounp, priv, texture)
 				if inv:is_empty("src") then return end
 				local src_list = inv:get_list("src")
 				local def = lottcrafting.get_craft_result(noun, inv:get_width("src"), src_list)
-				if def then
-					local can_add = true
-					for _, item in ipairs(def.outputs) do
-						if not inv:room_for_item("dst", ItemStack(item)) then
-							can_add = false
-							break
-						end
-					end
-					if can_add then
-						for _, item in ipairs(def.outputs) do
-							inv:add_item("dst", ItemStack(item))
-						end
-						for k, v in ipairs(def.inputs) do
-							for _, item in ipairs(v) do
-								inv:remove_item("src", ItemStack(item))
-							end
-						end
-					end
-				end
+				lottcrafting.handle_craft(def, inv, "src", "dst")
 			end
 		end,
 	})

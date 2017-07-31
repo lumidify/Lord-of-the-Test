@@ -1,6 +1,27 @@
 lottcrafting = {}
 lottcrafting.recipes = {}
 
+lottcrafting.handle_craft = function(def, inv, src_name, dst_name)
+	if not def then return end
+	local can_add = true
+	for _, item in ipairs(def.outputs) do
+		if not inv:room_for_item(dst_name, ItemStack(item)) then
+			can_add = false
+			break
+		end
+	end
+	if can_add then
+		for _, item in ipairs(def.outputs) do
+			inv:add_item(dst_name, ItemStack(item))
+		end
+		for k, v in ipairs(def.inputs) do
+			for _, item in ipairs(v) do
+				inv:remove_item(src_name, ItemStack(item))
+			end
+		end
+	end
+end
+
 local find_x = function(start, stop, step, items, default)
 	local pos = nil
 	local found = false
@@ -97,4 +118,11 @@ lottcrafting.register_craft("dwarf", {
 	outputs = {"default:stone"},
 })
 
+lottcrafting.register_craft("smelting", {
+	inputs = {{"lottores:silver_lump"}},
+	outputs = {"lottores:silver_ingot"},
+	time = 3,
+})
+
 dofile(minetest.get_modpath("lottcrafting").."/crafting_tables.lua")
+dofile(minetest.get_modpath("lottcrafting").."/furnaces.lua")
