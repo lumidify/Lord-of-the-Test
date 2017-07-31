@@ -235,9 +235,9 @@ local register_furnace = function(itemstring, name, craft_type)
 				was_active = true
 				meta:set_float("fuel_time", meta:get_float("fuel_time") + 1)
 				meta:set_float("src_time", meta:get_float("src_time") + 1)
-				if def and def.outputs and meta:get_float("src_time") >= time then
+				if meta:get_float("src_time") >= time then
 					-- FIXME: Add warning in chat if output can't be added?
-					lottcrafting.handle_craft(def, inv, "src", "dst")
+					if def and def.outputs then lottcrafting.handle_craft(def, inv, "src", "dst") end
 					meta:set_string("src_time", 0)
 				end
 			end
