@@ -290,4 +290,11 @@ end
 
 register_furnace("stove", "Stove", "stove")
 register_furnace("forge", "Forge", "forge")
+register_furnace("kiln", "Kiln", "kiln")
 register_furnace("smelting_furnace", "Smelting Furnace", "smelting")
+
+lottcrafting.register_craft("kiln", {
+	inputs = {{"darkage:basalt_cobble"}},
+	outputs = {"darkage:basalt"},
+	time = 3,
+})

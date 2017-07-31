@@ -1,4 +1,5 @@
 -- TODO: Abstract some of this since a lot of code is shared.
+-- TODO: Make these use the new crafting system.
 
 farming.threshing_floor_formspec =
 "size[8,10]"..

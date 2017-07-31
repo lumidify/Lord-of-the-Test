@@ -22,46 +22,6 @@ lottcrafting.handle_craft = function(def, inv, src_name, dst_name)
 	end
 end
 
-local find_x = function(start, stop, step, items, default)
-	local pos = nil
-	local found = false
-	for i = start, stop, step do
-		found = false
-		for j = 1, #items do
-			if items[j][i] ~= "" then
-				found = true
-				break
-			end
-		end
-		if not pos and found then
-			pos = i
-			break
-		end
-	end
-	if not pos then pos = default end
-	return pos
-end
-
-local find_y = function(start, stop, step, items, default)
-	local pos = nil
-	local found = false
-	for j = start, stop, step do
-		found = false
-		for i = 1, #items[1] do
-			if items[j][i] ~= "" then
-				found = true
-				break
-			end
-		end
-		if not pos and found then
-			pos = j
-			break
-		end
-	end
-	if not pos then pos = default end
-	return pos
-end
-
 local concat_recipe_table = function(items)
 	local temp = {}
 	for i = 1, #items do
@@ -70,18 +30,29 @@ local concat_recipe_table = function(items)
 	return table.concat(temp, "/")
 end
 
--- Please tell me there's a more efficient way to do this...
--- I can't even believe how ugly this is.
--- Purpose: "shrinkwrap" the grid - find smallest rectangle which
---          includes all non-empty strings
 local get_recipe_string = function(items)
 	if not items or not items[1] then return end
-	local t = {}
-	local x1 = find_x(1, #items[1], 1, items, 1)
-	local x2 = find_x(#items[1], 1, -1, items, #items[1])
-	local y1 = find_y(1, #items, 1, items, 1)
-	local y2 = find_y(#items, 1, -1, items, #items)
+	local x1 = #items[1]
+	local x2 = 0
+	local y1 = #items
+	local y2 = 0
+	local last_x = 0
+	for i, v1 in ipairs(items) do
+		last_x = 0
+		for j, v2 in ipairs(items[i]) do
+			if v2 ~= "" then
+				last_x = j
+				if j < x1 then x1 = j end
+			end
+		end
+		if last_x ~= 0 then
+			if last_x > x2 then x2 = last_x end
+			if i < y1 then y1 = i end
+			if i > y2 then y2 = i end
+		end
+	end
 
+	local t = {}
 	for i = 1, y2 - y1 + 1 do
 		t[i] = {}
 		for j = 1, x2 - x1 + 1 do
