@@ -1,5 +1,7 @@
 -- Adapted from default furnace
 -- TODO: Different textures
+-- Note: These currently only look for shapeless recipes; this can be
+--       changed easily, but I don't see any need for it right now.
 
 local function swap_node(pos,name)
 	local node = minetest.get_node(pos)
@@ -51,7 +53,7 @@ lottcrafting.furnace_inactive_formspec =
 	"listring[current_name;dst]"..
 	"listring[current_player;main]"
 
-local register_furnace = function(itemstring, name, craft_type)
+local register_furnace = function(itemstring, name)
 	minetest.register_node("lottcrafting:"..itemstring, {
 		description = name,
 		tiles = {"default_furnace_top.png", "default_furnace_bottom.png", "default_furnace_side.png",
@@ -224,7 +226,7 @@ local register_furnace = function(itemstring, name, craft_type)
 			local time = 0
 
 			if srclist then
-				def = lottcrafting.get_craft_result(craft_type, 1, srclist)
+				def = lottcrafting.get_craft_result(itemstring, 1, srclist, "shapeless")
 			end
 
 			if def then time = def.time end
@@ -258,7 +260,7 @@ local register_furnace = function(itemstring, name, craft_type)
 			local srclist = inv:get_list("src")
 
 			if srclist then
-				def = lottcrafting.get_craft_result(craft_type, 1, srclist)
+				def = lottcrafting.get_craft_result(itemstring, 1, srclist, "shapeless")
 			end
 			if fuellist then
 				fuel, afterfuel = minetest.get_craft_result({method = "fuel", width = 1, items = fuellist})
@@ -288,10 +290,10 @@ local register_furnace = function(itemstring, name, craft_type)
 	})
 end
 
-register_furnace("stove", "Stove", "stove")
-register_furnace("forge", "Forge", "forge")
-register_furnace("kiln", "Kiln", "kiln")
-register_furnace("smelting_furnace", "Smelting Furnace", "smelting")
+register_furnace("stove", "Stove")
+register_furnace("forge", "Forge")
+register_furnace("kiln", "Kiln")
+register_furnace("smelting_furnace", "Smelting Furnace")
 
 lottcrafting.register_craft("kiln", {
 	inputs = {{"darkage:basalt_cobble"}},

@@ -3,12 +3,13 @@ lottcrafting.recipes = {}
 lottcrafting.recipes.shaped = {}
 lottcrafting.recipes.shapeless = {}
 
-lottcrafting.handle_craft = function(def, inv, src_name, dst_name)
+lottcrafting.handle_craft = function(def, inv, src_name, dst_name, player)
 	if not def then return end
 	local can_add = true
 	for _, item in ipairs(def.outputs) do
 		if not inv:room_for_item(dst_name, ItemStack(item)) then
 			can_add = false
+			if player then minetest.chat_send_player(player:get_player_name(), "Output inventory full!") end
 			break
 		end
 	end
@@ -113,7 +114,7 @@ local get_namelist = function(itemlist, width)
 	return namelist
 end
 
-local get_craft_result_intern = function(craft_type, craft_attr, width, namelist)
+local get_craft_result_intern = function(craft_type, craft_attr, namelist)
 	local str = nil
 	if craft_type == "shaped" then
 		str = get_str_shaped(namelist)
@@ -123,20 +124,25 @@ local get_craft_result_intern = function(craft_type, craft_attr, width, namelist
 	return lottcrafting.recipes[craft_type][craft_attr][str]
 end
 
-lottcrafting.get_craft_result = function(craft_attr, width, itemlist, craft_type)
-	if not craft_attr or not width or not itemlist then return end
-	local namelist = get_namelist(itemlist, width)
+lottcrafting.get_craft_result_namelist = function(craft_attr, namelist, craft_type)
+	if not craft_attr or not namelist then return end
 	local def = nil
 	if craft_type then
 		if not lottcrafting.recipes[craft_type][craft_attr] then return end
-		def = get_craft_result_intern(craft_type, craft_attr, width, namelist)
+		def = get_craft_result_intern(craft_type, craft_attr, namelist)
 	else
 		if not lottcrafting.recipes["shaped"][craft_attr] and not
 			lottcrafting.recipes["shapeless"][craft_attr] then return end
-		def = get_craft_result_intern("shapeless", craft_attr, width, namelist)
-		if not def then def = get_craft_result_intern("shaped", craft_attr, width, namelist) end
+		def = get_craft_result_intern("shapeless", craft_attr, namelist)
+		if not def then def = get_craft_result_intern("shaped", craft_attr, namelist) end
 	end
 	return def
+end
+
+lottcrafting.get_craft_result = function(craft_attr, width, itemlist, craft_type)
+	if not craft_attr or not width or not itemlist then return end
+	local namelist = get_namelist(itemlist, width)
+	return lottcrafting.get_craft_result_namelist(craft_attr, namelist, craft_type)
 end
 
 lottcrafting.register_craft("shapeless", "dwarf", {
@@ -152,3 +158,5 @@ lottcrafting.register_craft("shapeless", "smelting", {
 
 dofile(minetest.get_modpath("lottcrafting").."/crafting_tables.lua")
 dofile(minetest.get_modpath("lottcrafting").."/furnaces.lua")
+dofile(minetest.get_modpath("lottcrafting").."/farming.lua")
+dofile(minetest.get_modpath("lottcrafting").."/crafts.lua")
