@@ -1,3 +1,4 @@
+-- FIXME: Possibly use ItemStack() in register_craft to handle aliases like lottpotion does.
 lottcrafting = {}
 lottcrafting.recipes = {}
 lottcrafting.recipes.shaped = {}
@@ -6,17 +7,21 @@ lottcrafting.recipes.shapeless = {}
 lottcrafting.handle_craft = function(def, inv, src_name, dst_name, player)
 	if not def then return end
 	local can_add = true
-	for _, item in ipairs(def.outputs) do
-		if not inv:room_for_item(dst_name, ItemStack(item)) then
+	for i, item in ipairs(def.outputs) do
+		if inv:room_for_item(dst_name, ItemStack(item)) then
+			inv:add_item(dst_name, ItemStack(item))
+		else
+			-- This is needed to handle recipes with multiple outputs where
+			-- some may fit but not all
+			for j = 1, i do
+				inv:remove_item(dst_name, ItemStack(v))
+			end
 			can_add = false
 			if player then minetest.chat_send_player(player:get_player_name(), "Output inventory full!") end
 			break
 		end
 	end
 	if can_add then
-		for _, item in ipairs(def.outputs) do
-			inv:add_item(dst_name, ItemStack(item))
-		end
 		for k, v in ipairs(def.inputs) do
 			-- FIXME: Maybe turn shaped recipes into 1D tables when they are
 			-- registered so this can be simplified
@@ -114,6 +119,9 @@ local get_namelist = function(itemlist, width)
 	return namelist
 end
 
+local function get_numlist(itemstring_list)
+end
+
 local get_craft_result_intern = function(craft_type, craft_attr, namelist)
 	local str = nil
 	if craft_type == "shaped" then
@@ -132,9 +140,13 @@ lottcrafting.get_craft_result_namelist = function(craft_attr, namelist, craft_ty
 		def = get_craft_result_intern(craft_type, craft_attr, namelist)
 	else
 		if not lottcrafting.recipes["shaped"][craft_attr] and not
-			lottcrafting.recipes["shapeless"][craft_attr] then return end
+			lottcrafting.recipes["shapeless"][craft_attr] and not
+			lottcrafting.recipes["shaped_num"][craft_attr] and not
+			lottcrafting.recipes["shapeless_num"][craft_attr] then return end
 		def = get_craft_result_intern("shapeless", craft_attr, namelist)
 		if not def then def = get_craft_result_intern("shaped", craft_attr, namelist) end
+		if not def then def = get_craft_result_intern("shapeless_num", craft_attr, namelist) end
+		if not def then def = get_craft_result_intern("shaped_num", craft_attr, namelist) end
 	end
 	return def
 end
