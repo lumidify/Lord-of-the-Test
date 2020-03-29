@@ -94,6 +94,10 @@ lottcrafting.register_craft = function(craft_type, craft_attr, def)
 	if not lottcrafting.recipes[craft_type][craft_attr] then
 		lottcrafting.recipes[craft_type][craft_attr] = {}
 	end
+	-- Handle aliases
+	for i, v in ipairs(def.inputs) do
+		def.inputs[i] = ItemStack(v):to_string()
+	end
 	local str = nil
 	if craft_type == "shaped" then
 		str = concat_recipe_table(def.inputs)
